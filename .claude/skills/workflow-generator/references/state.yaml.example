@@ -1,0 +1,73 @@
+# state.yaml — SOT (Single Source of Truth) 템플릿
+# 워크플로우 실행 시 Orchestrator/Team Lead만 이 파일을 수정한다 (절대 기준 2).
+# 모든 에이전트는 읽기 전용으로 접근한다.
+
+workflow:
+  name: "[워크플로우 이름]"
+  current_step: 1
+  status: "in_progress"     # in_progress | completed | failed
+
+  # 부모 게놈 메타데이터 (계보 추적 — soul.md §0)
+  parent_genome:
+    source: "AgenticWorkflow"
+    version: "2026-02-20"
+    inherited_dna: ["absolute-criteria", "sot-pattern", "3-phase-structure", "4-layer-qa", "safety-hooks", "adversarial-review", "decision-log", "context-preservation", "cross-step-traceability", "domain-knowledge-structure"]
+
+  # 단계별 산출물 경로 — Anti-Skip Guard가 파일 존재 + 최소 크기(100 bytes) 검증
+  outputs:
+    # step-1: "research/collected-data.md"
+    # step-1-ko: "research/collected-data.ko.md"   # @translator 번역본
+    # step-2: "research/insights.md"
+
+  # (human) 단계 상태 — Autopilot 모드에서 자동 승인 추적
+  pending_human_action:
+    step: null               # 현재 대기 중인 (human) 단계 번호
+    options: []              # 선택지 목록
+
+  # --- Agent Team 활성 시 추가 (team 단계 진행 중일 때만) ---
+  # active_team:
+  #   name: "[team-name]"              # TeamCreate에 전달한 이름
+  #   status: "partial"                # D-4: 허용 값: partial (진행 중) | all_completed (모든 Task 완료)
+  #   tasks_completed: []              # 완료된 Task ID
+  #   tasks_pending: []                # 미완료 Task ID
+  #   completed_summaries:             # RLM Layer 2 — 세션 복원 시 팀 맥락 보존
+  #     task-1:
+  #       agent: "@[agent-name]"
+  #       model: "[opus|sonnet|haiku]"
+  #       output: "[산출물 경로]"
+  #       summary: "[1-2문장 작업 요약]"
+  # completed_teams: []                # 완료된 팀 이력 (감사 추적)
+
+  # --- Autopilot 모드 활성 시 추가 (AGENTS.md §5.1 정본 스키마) ---
+  # autopilot:
+  #   enabled: false                   # true | false
+  #   decision_log_dir: "autopilot-logs/"
+  #   auto_approved_steps: []          # 자동 승인된 (human) 단계 목록
+
+  # --- pACS 활성 시 추가 (AGENTS.md §5.4) ---
+  # pacs:
+  #   current_step_score: 72          # 현재 단계 pACS = min(F, C, L)
+  #   dimensions:                     # 3차원 채점 결과
+  #     F: 72                         # Factual Grounding (사실 근거)
+  #     C: 85                         # Completeness (완전성)
+  #     L: 78                         # Logical Coherence (논리 일관성)
+  #   weak_dimension: "F"             # min-score 차원
+  #   pre_mortem_flag: null           # Pre-mortem Protocol 약점 식별 (string)
+  #   history:                        # 단계별 이력
+  #     step-1: {score: 85, weak: "C"}
+  #     step-2: {score: 72, weak: "F"}
+
+  # --- Verification 이력 (AGENTS.md §5.3) ---
+  # verification:
+  #   last_verified_step: 2            # 마지막 검증 통과 단계
+  #   retries:                         # 재시도 이력 (최대 10회, ULW 시 15회)
+  #     step-2: 1                      # step-2에서 1회 재시도 발생
+
+  # --- Domain Knowledge Structure (optional — Research 단계에서 구축 시 활성화) ---
+  # domain_knowledge:
+  #   file: "domain-knowledge.yaml"
+  #   entity_count: 0
+  #   relation_count: 0
+  #   constraint_count: 0
+  #   built_at_step: null
+  #   last_validated: null

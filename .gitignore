@@ -1,0 +1,22 @@
+.DS_Store
+__pycache__/
+*.pdf
+!coding-resource/*.pdf
+
+# Context Preservation System — session-specific runtime data
+.claude/context-snapshots/
+
+# D-1: Workflow runtime directories (generated during workflow execution)
+verification-logs/
+autopilot-logs/
+pacs-logs/
+review-logs/
+diagnosis-logs/
+translations/*
+!translations/glossary.yaml
+
+# TDD Guard toggle — personal workflow setting (not shared)
+.tdd-guard
+
+# Setup Hook logs — runtime diagnostics (regenerated on each run)
+.claude/hooks/*.log

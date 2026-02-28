@@ -1,0 +1,34 @@
+# AgenticWorkflow Translation Glossary
+# ======================================
+# Maintained by @translator sub-agent (Step 5 of Translation Protocol).
+# Format: "English term": "Korean translation"
+# Terms kept in English use: "English term": "English term"
+# Sorted alphabetically by English term.
+# NEVER remove existing entries — only add new ones.
+
+"Absolute Criteria": "절대 기준"
+"Adversarial Review": "적대적 리뷰"
+"Agent Team": "Agent Team"
+"Anti-Skip Guard": "Anti-Skip Guard"
+"Autopilot": "Autopilot"
+"CAP": "CAP"
+"Code Change Protocol": "코드 변경 프로토콜"
+"Coding Anchor Points": "코딩 기준점"
+"Context Preservation System": "컨텍스트 보존 시스템"
+"Decision Log": "Decision Log"
+"English-First": "English-First"
+"Hook": "Hook"
+"Knowledge Archive": "Knowledge Archive"
+"Orchestrator": "Orchestrator"
+"P1 Compliance": "P1 Compliance"
+"Pre-mortem Protocol": "Pre-mortem Protocol"
+"Quality Gate": "Quality Gate"
+"RLM": "RLM"
+"SOT": "SOT"
+"Single Source of Truth": "단일 소스 오브 트루스(Single Source of Truth)"
+"Sub-agent": "서브에이전트"
+"Team Lead": "Team Lead"
+"Ultrawork": "Ultrawork"
+"Verification Gate": "Verification Gate"
+"pACS": "pACS"
+"workflow": "워크플로우"
