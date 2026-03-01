@@ -15,6 +15,11 @@ diagnosis-logs/
 translations/*
 !translations/glossary.yaml
 
+# Church admin sensitive data files (personal/financial information)
+church-admin/data/members.yaml
+church-admin/data/finance.yaml
+church-admin/data/newcomers.yaml
+
 # TDD Guard toggle — personal workflow setting (not shared)
 .tdd-guard
 

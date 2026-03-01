@@ -1,0 +1,133 @@
+# data/schedule.yaml
+# Writer: schedule-manager agent (sole writer — Layer 1 enforced)
+# Validator: validate_schedule.py (S1-S6)
+# Sensitivity: LOW (public schedule information)
+# Deletion policy: status → "cancelled" for events; remove completed past events annually
+
+schema_version: "1.0"
+last_updated: "2026-02-28"
+updated_by: "schedule-manager"
+
+regular_services:
+  - id: "SVC-SUN-1"
+    name: "주일예배 1부 (Sunday Service 1st)"
+    recurrence: "weekly"
+    day_of_week: "sunday"
+    time: "09:00"
+    duration_minutes: 70
+    location: "본당 (Main Sanctuary)"
+    preacher_rotation:
+      - "담임목사 (Senior Pastor)"
+      - "부목사1 (Associate Pastor 1)"
+    worship_leader: "찬양팀A (Worship Team A)"
+
+  - id: "SVC-SUN-2"
+    name: "주일예배 2부 (Sunday Service 2nd)"
+    recurrence: "weekly"
+    day_of_week: "sunday"
+    time: "11:00"
+    duration_minutes: 70
+    location: "본당 (Main Sanctuary)"
+    preacher_rotation:
+      - "담임목사 (Senior Pastor)"
+    worship_leader: "찬양팀B (Worship Team B)"
+
+  - id: "SVC-WED"
+    name: "수요예배 (Wednesday Service)"
+    recurrence: "weekly"
+    day_of_week: "wednesday"
+    time: "19:30"
+    duration_minutes: 60
+    location: "본당 (Main Sanctuary)"
+    preacher_rotation:
+      - "담임목사 (Senior Pastor)"
+      - "부목사1 (Associate Pastor 1)"
+      - "부목사2 (Associate Pastor 2)"
+    worship_leader: null
+
+  - id: "SVC-FRI"
+    name: "금요기도회 (Friday Prayer Meeting)"
+    recurrence: "weekly"
+    day_of_week: "friday"
+    time: "20:00"
+    duration_minutes: 60
+    location: "소예배실 (Small Chapel)"
+    preacher_rotation:
+      - "부목사1 (Associate Pastor 1)"
+      - "부목사2 (Associate Pastor 2)"
+    worship_leader: null
+
+  - id: "SVC-DAWN"
+    name: "새벽기도회 (Early Morning Prayer)"
+    recurrence: "weekly"
+    day_of_week: "monday"
+    time: "05:30"
+    duration_minutes: 40
+    location: "소예배실 (Small Chapel)"
+    preacher_rotation:
+      - "담임목사 (Senior Pastor)"
+    worship_leader: null
+
+special_events:
+  - id: "EVT-2026-001"
+    name: "2026년 신년감사예배 (New Year Thanksgiving Service)"
+    date: "2026-01-04"
+    time: "11:00"
+    duration_minutes: 120
+    location: "본당 (Main Sanctuary)"
+    preacher: "담임목사 (Senior Pastor)"
+    description: "New Year thanksgiving worship service"
+    attendance_expected: 350
+    preparation:
+      - "현수막 제작 (Banner production)"
+      - "특별 찬양팀 섭외 (Special worship team arrangement)"
+      - "식사 준비 250인분 (Meal preparation for 250)"
+    status: "completed"
+
+  - id: "EVT-2026-015"
+    name: "부활절 연합예배 (Easter Joint Service)"
+    date: "2026-04-05"
+    time: "10:00"
+    duration_minutes: 90
+    location: "본당 (Main Sanctuary)"
+    preacher: "담임목사 (Senior Pastor)"
+    description: "Easter celebration service with special baptism ceremony"
+    attendance_expected: 400
+    preparation:
+      - "꽃 장식 준비 (Floral decoration)"
+      - "달걀 나눔 행사 (Egg sharing event)"
+      - "세례식 준비 (Baptism ceremony preparation)"
+    status: "planned"
+
+  - id: "EVT-2026-008"
+    name: "3월 부흥회 (March Revival Meeting)"
+    date: "2026-03-15"
+    time: "19:00"
+    duration_minutes: 90
+    location: "본당 (Main Sanctuary)"
+    preacher: "초청강사 (Guest Speaker)"
+    description: "3일간 부흥회 (3-day revival meeting, March 15-17)"
+    attendance_expected: 300
+    preparation:
+      - "강사 숙소 준비 (Guest speaker accommodation)"
+      - "특별 찬양 준비 (Special worship preparation)"
+    status: "confirmed"
+
+facility_bookings:
+  - id: "FAC-2026-001"
+    facility: "교육관 3층 (Education Building 3F)"
+    date: "2026-02-15"
+    time_start: "14:00"
+    time_end: "17:00"
+    purpose: "청년부 수련회 준비 모임 (Youth retreat planning meeting)"
+    booked_by: "청년부 간사 (Youth Ministry Staff)"
+    status: "confirmed"
+
+  - id: "FAC-2026-002"
+    facility: "소예배실 (Small Chapel)"
+    date: "2026-03-05"
+    time_start: "10:00"
+    time_end: "12:00"
+    purpose: "구역장 모임 (Cell Group Leaders Meeting)"
+    booked_by: "교구장 (District Pastor)"
+    status: "pending"

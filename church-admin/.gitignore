@@ -1,0 +1,16 @@
+# Sensitive church data — personal information and financial records
+# These files must be backed up separately with encryption
+data/members.yaml
+data/finance.yaml
+data/newcomers.yaml
+
+# Inbox staging and processing artifacts
+inbox/staging/
+inbox/processed/
+inbox/errors/
+
+# Runtime snapshots
+.claude/context-snapshots/
+
+# Backup files
+backups/

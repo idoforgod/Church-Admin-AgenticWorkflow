@@ -1,0 +1,346 @@
+# Denomination Report Template — 예장통합 (Presbyterian Church of Korea United)
+# Annual Statistical Report (교세 통계 보고서) Field Mapping
+#
+# This template maps church data files to the standard annual report fields
+# required by 예장통합 (PCK United) denomination headquarters.
+#
+# Data Sources:
+#   - data/members.yaml → 교세 통계 (membership statistics)
+#   - data/finance.yaml → 재정 결산 (financial settlement)
+#   - data/schedule.yaml → 예배 현황 (worship statistics)
+#   - data/newcomers.yaml → 신입교인 통계 (new member statistics)
+#
+# Extension hooks included for:
+#   - 예장합동 (Presbyterian Church in Korea) — M3 scope
+#   - 기감 (Korean Methodist Church) — M3 scope
+
+template_metadata:
+  id: "denomination-report-template"
+  version: "1.0.0"
+  denomination: "예장통합"
+  denomination_english: "Presbyterian Church of Korea (PCK United)"
+  report_type: "annual_statistics"
+  report_period: "calendar_year"
+  created_at: "2026-02-28"
+  hitl_gate: "double-review"
+  risk_level: "high"
+
+# ─────────────────────────────────────────────
+# Section 1: 교세 통계 (Membership Statistics)
+# Source: data/members.yaml
+# ─────────────────────────────────────────────
+membership_statistics:
+  # 1-1. 교인 현황 (Current Membership)
+  current_membership:
+    - field: "세례교인 (Baptized Members)"
+      data_path: "members[status=active AND baptism_date!=null].count"
+      filter: "member_type in [세례교인, 입교교인]"
+      description: "Members who have received baptism (세례)"
+
+    - field: "입교교인 (Confirmed Members)"
+      data_path: "members[status=active AND confirmation_date!=null].count"
+      filter: "member_type == 입교교인"
+      description: "Members who have completed confirmation (입교)"
+
+    - field: "유아세례교인 (Infant Baptism)"
+      data_path: "members[status=active AND infant_baptism_date!=null].count"
+      filter: "member_type == 유아세례"
+      description: "Children who received infant baptism"
+
+    - field: "학습교인 (Catechumen)"
+      data_path: "members[status=active AND catechumen_date!=null AND confirmation_date==null].count"
+      description: "Members in catechetical instruction, not yet confirmed"
+
+    - field: "원입교인 (Enrolled Members)"
+      data_path: "members[status=active].count"
+      description: "Total enrolled members regardless of baptism status"
+
+  # 1-2. 교적 변동 (Membership Changes)
+  membership_changes:
+    - field: "전입 (Transfers In)"
+      data_path: "members[status=active AND transfer_type=전입].count"
+      period: "report_year"
+      description: "Members who transferred from other churches"
+
+    - field: "전출 (Transfers Out)"
+      data_path: "members[status=transferred AND transfer_type=전출].count"
+      period: "report_year"
+      description: "Members who transferred to other churches"
+
+    - field: "세례 (New Baptisms)"
+      data_path: "members[baptism_date IN report_year].count"
+      period: "report_year"
+      description: "Baptisms performed during the report year"
+
+    - field: "입교 (New Confirmations)"
+      data_path: "members[confirmation_date IN report_year].count"
+      period: "report_year"
+      description: "Confirmations performed during the report year"
+
+    - field: "소천 (Deceased)"
+      data_path: "members[status=deceased AND death_date IN report_year].count"
+      period: "report_year"
+      description: "Members who passed away during the report year"
+
+    - field: "제적 (Removed)"
+      data_path: "members[status=removed AND removal_date IN report_year].count"
+      period: "report_year"
+      description: "Members removed from rolls during the report year"
+
+  # 1-3. 신입교인 통계 (New Member Statistics)
+  new_members:
+    source: "data/newcomers.yaml"
+    fields:
+      - field: "등록 신입교인 수 (Registered Newcomers)"
+        data_path: "newcomers[registered_date IN report_year].count"
+
+      - field: "정착 완료 (Settled)"
+        data_path: "newcomers[stage=settled AND settled_date IN report_year].count"
+
+      - field: "정착률 (Settlement Rate)"
+        data_path: "(settled_count / registered_count) * 100"
+        format: "percentage"
+
+# ─────────────────────────────────────────────
+# Section 2: 재정 결산 (Financial Settlement)
+# Source: data/finance.yaml
+# ─────────────────────────────────────────────
+financial_settlement:
+  # 2-1. 수입 (Income)
+  income:
+    - field: "십일조 (Tithes)"
+      data_path: "finance.offerings[category=십일조].sum(amount)"
+      period: "report_year"
+      format: "krw_integer"
+
+    - field: "감사헌금 (Thanksgiving Offerings)"
+      data_path: "finance.offerings[category=감사헌금].sum(amount)"
+      period: "report_year"
+      format: "krw_integer"
+
+    - field: "특별헌금 (Special Offerings)"
+      data_path: "finance.offerings[category=특별헌금].sum(amount)"
+      period: "report_year"
+      format: "krw_integer"
+
+    - field: "기타 수입 (Other Income)"
+      data_path: "finance.offerings[category=기타].sum(amount)"
+      period: "report_year"
+      format: "krw_integer"
+
+    - field: "수입 합계 (Total Income)"
+      data_path: "SUM(income.*)"
+      format: "krw_integer"
+      validation: "F3_sum_check"
+
+  # 2-2. 지출 (Expenditure)
+  expenditure:
+    - field: "관리비 (Administrative)"
+      data_path: "finance.expenses[category=관리비].sum(amount)"
+      period: "report_year"
+      format: "krw_integer"
+
+    - field: "인건비 (Personnel)"
+      data_path: "finance.expenses[category=인건비].sum(amount)"
+      period: "report_year"
+      format: "krw_integer"
+
+    - field: "사역비 (Ministry)"
+      data_path: "finance.expenses[category=사역비].sum(amount)"
+      period: "report_year"
+      format: "krw_integer"
+
+    - field: "선교비 (Mission)"
+      data_path: "finance.expenses[category=선교비].sum(amount)"
+      period: "report_year"
+      format: "krw_integer"
+
+    - field: "기타 지출 (Other Expenses)"
+      data_path: "finance.expenses[category=기타].sum(amount)"
+      period: "report_year"
+      format: "krw_integer"
+
+    - field: "지출 합계 (Total Expenditure)"
+      data_path: "SUM(expenditure.*)"
+      format: "krw_integer"
+      validation: "F3_sum_check"
+
+  # 2-3. 결산 (Settlement)
+  settlement:
+    - field: "이월금 (Carried Forward)"
+      data_path: "finance.budget.previous_balance"
+      format: "krw_integer"
+
+    - field: "차기 이월 (Balance to Next Year)"
+      data_path: "carried_forward + total_income - total_expenditure"
+      format: "krw_integer"
+      validation: "F4_budget_arithmetic"
+
+# ─────────────────────────────────────────────
+# Section 3: 예배 현황 (Worship Statistics)
+# Source: data/schedule.yaml
+# ─────────────────────────────────────────────
+worship_statistics:
+  regular_services:
+    - field: "주일예배 (Sunday Worship)"
+      data_path: "schedule.regular_services[id=SVC-SUN-1]"
+      metrics:
+        - "average_attendance"
+        - "service_count"
+
+    - field: "수요예배 (Wednesday Service)"
+      data_path: "schedule.regular_services[id=SVC-WED]"
+      metrics:
+        - "average_attendance"
+        - "service_count"
+
+    - field: "금요기도회 (Friday Prayer)"
+      data_path: "schedule.regular_services[id=SVC-FRI]"
+      metrics:
+        - "average_attendance"
+        - "service_count"
+
+    - field: "새벽기도 (Dawn Prayer)"
+      data_path: "schedule.regular_services[id=SVC-DAWN]"
+      metrics:
+        - "average_attendance"
+        - "service_count"
+
+  special_events:
+    - field: "부활절 (Easter)"
+      data_path: "schedule.events[name CONTAINS 부활절]"
+      period: "report_year"
+
+    - field: "추수감사절 (Thanksgiving)"
+      data_path: "schedule.events[name CONTAINS 추수감사]"
+      period: "report_year"
+
+    - field: "성탄절 (Christmas)"
+      data_path: "schedule.events[name CONTAINS 성탄]"
+      period: "report_year"
+
+    - field: "수련회 (Retreat)"
+      data_path: "schedule.events[name CONTAINS 수련회]"
+      period: "report_year"
+
+# ─────────────────────────────────────────────
+# Section 4: 교육 현황 (Education Statistics)
+# Source: data/members.yaml (department assignments)
+# ─────────────────────────────────────────────
+education_statistics:
+  departments:
+    - field: "주일학교 (Sunday School)"
+      data_path: "members[department=주일학교 AND status=active].count"
+
+    - field: "중고등부 (Youth)"
+      data_path: "members[department=중고등부 AND status=active].count"
+
+    - field: "청년부 (Young Adults)"
+      data_path: "members[department=청년부 AND status=active].count"
+
+    - field: "장년부 (Adults)"
+      data_path: "members[department=장년부 AND status=active].count"
+
+# ─────────────────────────────────────────────
+# Section 5: 직분자 현황 (Office Bearers)
+# Source: data/members.yaml (roles/positions)
+# ─────────────────────────────────────────────
+office_bearers:
+  ordained:
+    - field: "목사 (Pastors)"
+      data_path: "members[role=목사 AND status=active].count"
+
+    - field: "장로 (Elders)"
+      data_path: "members[role=장로 AND status=active].count"
+
+    - field: "안수집사 (Ordained Deacons)"
+      data_path: "members[role=안수집사 AND status=active].count"
+
+  lay_officers:
+    - field: "권사 (Kwonsa/Senior Deaconess)"
+      data_path: "members[role=권사 AND status=active].count"
+
+    - field: "집사 (Deacons)"
+      data_path: "members[role=집사 AND status=active].count"
+
+    - field: "서리집사 (Associate Deacons)"
+      data_path: "members[role=서리집사 AND status=active].count"
+
+# ─────────────────────────────────────────────
+# Report Generation Configuration
+# ─────────────────────────────────────────────
+generation_config:
+  output_path: "output/documents/denomination-reports/{year}-annual-report.md"
+
+  report_header:
+    title: "{year}년도 교세 통계 보고서"
+    denomination: "대한예수교장로회(통합)"
+    church_name_source: "state.yaml → church.name"
+    pastor_name_source: "state.yaml → church.representative.name"
+    report_date_format: "YYYY년 M월 D일"
+
+  seal_zone:
+    type: "NO_VARIABLE_CONTENT"
+    positions:
+      - "church_seal"
+      - "pastor_seal"
+      - "denomination_seal"
+    description: "직인 위치 — template_engine.py must not populate these zones"
+
+  validation:
+    pre_generation:
+      - "validate_members.py --data-dir data/"
+      - "validate_finance.py --data-dir data/"
+      - "validate_schedule.py --data-dir data/"
+      - "validate_newcomers.py --data-dir data/"
+    post_generation:
+      - "F3: income total = sum of income categories"
+      - "F3: expenditure total = sum of expenditure categories"
+      - "F4: balance = carried_forward + income - expenditure"
+      - "Membership: total = baptized + infant_baptism + catechumen + enrolled_other"
+
+  hitl_gate:
+    type: "double-review"
+    reviewers:
+      - "서기 (Church Clerk)"
+      - "담임목사 (Senior Pastor)"
+    reason: "Denomination reports carry high institutional risk — submitted to presbytery"
+
+# ─────────────────────────────────────────────
+# Extension Hooks (M3 Scope)
+# ─────────────────────────────────────────────
+extension_hooks:
+  # 예장합동 (Presbyterian Church in Korea) — M3
+  pcik:
+    status: "planned"
+    denomination: "예장합동"
+    denomination_english: "Presbyterian Church in Korea (PCiK)"
+    differences_from_pck:
+      - "Different report form layout"
+      - "Additional fields for 전도 통계 (evangelism statistics)"
+      - "Different office bearer categories"
+    implementation_note: "Create pcik-report-template.yaml following same pattern"
+
+  # 기감 (Korean Methodist Church) — M3
+  kmc:
+    status: "planned"
+    denomination: "기독교대한감리회"
+    denomination_english: "Korean Methodist Church (KMC)"
+    differences_from_pck:
+      - "Methodist-specific terminology (권사 → 전도사 hierarchy differs)"
+      - "Different financial reporting categories"
+      - "Conference-based reporting structure"
+    implementation_note: "Create kmc-report-template.yaml following same pattern"
+
+  # Generic extension interface
+  custom:
+    status: "available"
+    description: "Any denomination can create a custom template YAML following this schema"
+    required_sections:
+      - "template_metadata"
+      - "membership_statistics"
+      - "financial_settlement"
+    optional_sections:
+      - "worship_statistics"
+      - "education_statistics"
+      - "office_bearers"

@@ -1,0 +1,602 @@
+metadata:
+  domain: church-administration
+  version: '1.0'
+  schema_version: '1.0'
+  created: '2026-02-28'
+  source_step: 1
+  description: 'Formal domain ontology for the Church Administration AI Agentic Workflow Automation System. Covers 6 core
+    data domains (members, finance, schedule, newcomers, bulletin, glossary), their relationships, and business constraints
+    governing a Korean mid-size church (100-500 members).
+
+    '
+entities:
+- id: church-state
+  type: sot
+  slug: church-state
+  attributes:
+    file: church-state.yaml
+    description: 'Central Single Source of Truth for the entire church administration system. Stores church identity, data
+      file paths, current bulletin issue number, and system-wide configuration. Write access restricted to Orchestrator only
+      (Absolute Principle 2).
+
+      '
+    writer_agent: orchestrator
+    key_fields:
+    - church.name (string, required)
+    - church.current_bulletin_issue (integer, monotonically increasing)
+    - 'church.status (enum: active|inactive)'
+    - church.data_paths.* (string, valid file paths)
+- id: members
+  type: data-entity
+  slug: members
+  attributes:
+    file: data/members.yaml
+    description: 'Church member registry (교적). Contains all registered members with personal information, contact details,
+      church roles, family groupings, and history. Soft-delete only (status: inactive) — never remove records.
+
+      '
+    writer_agent: member-manager
+    id_format: M\d{3,}
+    key_fields:
+    - id (string, unique, immutable)
+    - name (string, required)
+    - 'gender (enum: male|female)'
+    - birth_date (date, YYYY-MM-DD)
+    - 'status (enum: active|inactive|transferred|deceased)'
+    - contact.phone (string, Korean format 010-XXXX-XXXX, nullable)
+    - contact.email (string, email format, nullable)
+    - 'church.role (enum: 목사|장로|집사|권사|성도|null)'
+    - church.department (string, nullable)
+    - church.cell_group (string, nullable)
+    - family.family_id (string, F\d{3,}, nullable)
+    - 'family.relation (enum: household_head|spouse|child|etc)'
+    - history (list[object], append-only)
+    computed_fields:
+    - _stats.total_active (count of active members)
+    - _stats.total_members (total count)
+    deletion_policy: 'soft-delete (status: inactive)'
+    scale_limit: 500
+- id: finance
+  type: data-entity
+  slug: finance
+  attributes:
+    file: data/finance.yaml
+    description: 'Church financial records including offerings (헌금), expenses (지출), annual budget, and monthly summaries.
+      All amounts in KRW. Void-only deletion policy. Requires human approval for all write operations (Autopilot permanently
+      disabled for finance).
+
+      '
+    writer_agent: finance-recorder
+    key_fields:
+    - offerings[].id (string, unique, OFF-YYYY-NNN)
+    - 'offerings[].type (enum: regular|thanks|special|tithe)'
+    - offerings[].items[].amount (integer, > 0)
+    - offerings[].total (integer, = sum of items)
+    - offerings[].verified (boolean, required)
+    - expenses[].id (string, unique, EXP-YYYY-NNN)
+    - 'expenses[].category (enum: 관리비|인건비|사역비|선교비|교육비|기타)'
+    - expenses[].approved_by (string, required)
+    - budget.total_budget (integer, = sum of category budgets)
+    - monthly_summary[YYYY-MM].balance (= income - expense)
+    deletion_policy: 'void-only (void: true)'
+    autopilot: permanently_disabled
+    currency: KRW
+- id: schedule
+  type: data-entity
+  slug: schedule
+  attributes:
+    file: data/schedule.yaml
+    description: 'Church service schedules, special events, and facility bookings. Covers regular services (weekly/biweekly/monthly),
+      one-off events, and room reservations. Supports schedule conflict detection.
+
+      '
+    writer_agent: orchestrator
+    key_fields:
+    - regular_services[].id (string, unique, SVC-*)
+    - 'regular_services[].recurrence (enum: weekly|biweekly|monthly)'
+    - 'regular_services[].day_of_week (enum: sunday..saturday)'
+    - regular_services[].time (string, HH:MM)
+    - special_events[].id (string, unique, EVT-YYYY-NNN)
+    - 'special_events[].status (enum: planned|confirmed|completed|cancelled)'
+    - facility_bookings[].id (string, unique, FAC-YYYY-NNN)
+    - facility_bookings[].time_start < time_end
+- id: newcomers
+  type: data-entity
+  slug: newcomers
+  attributes:
+    file: data/newcomers.yaml
+    description: 'Newcomer tracking pipeline. Manages the 6-stage journey from first visit to settled member: first_visit
+      → attending → small_group → baptism_class → baptized → settled. Upon settlement, links to members.yaml via settled_as_member
+      field.
+
+      '
+    writer_agent: newcomer-tracker
+    id_format: N\d{3,}
+    key_fields:
+    - id (string, unique, N\d{3,})
+    - name (string, required)
+    - 'journey_stage (enum: first_visit|attending|small_group|baptism_class|baptized|settled)'
+    - journey_milestones.{stage}.completed (boolean)
+    - referred_by (string, member ID or null)
+    - assigned_to (string, member ID)
+    - settled_as_member (string, member ID or null)
+    - 'status (enum: active|settled|inactive|transferred)'
+    journey_stages:
+    - first_visit
+    - attending
+    - small_group
+    - baptism_class
+    - baptized
+    - settled
+    stage_transition_requires_approval: true
+- id: bulletin-data
+  type: data-entity
+  slug: bulletin-data
+  attributes:
+    file: data/bulletin-data.yaml
+    description: 'Source data for weekly church bulletin generation. Contains sermon info, worship order, announcements, prayer
+      requests, offering team roster, and celebrations (birthdays, anniversaries). Generated weekly, issue number is monotonically
+      increasing.
+
+      '
+    writer_agent: bulletin-generator
+    key_fields:
+    - bulletin.issue_number (integer, monotonically increasing)
+    - bulletin.date (date, YYYY-MM-DD, Sunday)
+    - bulletin.sermon.title (string, required)
+    - bulletin.sermon.scripture (string, required)
+    - bulletin.worship_order (list, ≥3 items)
+    - 'bulletin.announcements[].priority (enum: high|normal|low)'
+    - bulletin.celebrations.birthday[].member_id (string, valid member ID)
+    generation_frequency: weekly
+- id: church-glossary
+  type: data-entity
+  slug: church-glossary
+  attributes:
+    file: data/church-glossary.yaml
+    description: 'Korean church terminology dictionary. Contains korean/english/context triples for church-specific terms.
+      Append-only — never delete terms. Seeded on Day-1 with 50+ terms. Referenced by all agents for consistent terminology
+      usage.
+
+      '
+    writer_agent: any (append-only)
+    key_fields:
+    - terms[].korean (string, unique, non-empty)
+    - terms[].english (string, non-empty)
+    - terms[].context (string, non-empty)
+    deletion_policy: append-only (never delete)
+    seed_count: 50
+- id: inbox-pipeline
+  type: processing-component
+  slug: inbox-pipeline
+  attributes:
+    description: '3-tier input processing pipeline for heterogeneous data sources. Tier A: Excel/CSV (high accuracy, deterministic
+      parsing). Tier B: Word/PDF (medium-high accuracy, text extraction + NLP). Tier C: Images (medium accuracy, Claude multimodal
+      analysis). All output to standardized YAML format in data/ directory.
+
+      '
+    tiers:
+    - name: Tier A
+      formats:
+      - Excel (.xlsx)
+      - CSV (.csv)
+      accuracy: ≥95%
+      method: deterministic (Python openpyxl/csv)
+    - name: Tier B
+      formats:
+      - Word (.docx)
+      - PDF (.pdf)
+      accuracy: ≥85%
+      method: text extraction + NLP classification
+    - name: Tier C
+      formats:
+      - Image (.jpg/.png)
+      - Scanned PDF
+      accuracy: ≥70%
+      method: Claude multimodal vision analysis
+    input_dir: inbox/
+    output_dir: data/
+- id: scan-replicate
+  type: processing-component
+  slug: scan-replicate
+  attributes:
+    description: 'Template-based document generation engine. Scans a sample document to identify fixed areas (church branding,
+      headers) and variable areas (dates, names, content). Generates a template YAML, then auto-fills with data from data/*.yaml
+      to produce output documents.
+
+      '
+    document_types:
+    - bulletin (주보)
+    - tax-receipt (기부금영수증)
+    - worship-order (예배순서지)
+    - official-letter (공문)
+    - meeting-minutes (회의록)
+    - certificate (증서)
+    - event-invitation (행사 초청장)
+    template_dir: inbox/templates/
+- id: validate-members
+  type: validation-script
+  slug: validate-members
+  attributes:
+    file: church-admin/.claude/hooks/scripts/validate_members.py
+    description: 'P1 deterministic validation for members.yaml. Enforces M1-M6 rules: M1 unique IDs, M2 required fields, M3
+      phone format, M4 status enum, M5 family ID consistency, M6 date field validity.
+
+      '
+    target: data/members.yaml
+    rules:
+    - 'M1: All member IDs unique and match M\d{3,} format'
+    - 'M2: name and status fields non-empty for every record'
+    - 'M3: phone matches 010-XXXX-XXXX Korean mobile format when present'
+    - 'M4: status in {active, inactive, transferred, deceased}'
+    - 'M5: family_id references valid family group with ≥2 members'
+    - 'M6: All date fields valid YYYY-MM-DD, birth_date in past'
+- id: validate-finance
+  type: validation-script
+  slug: validate-finance
+  attributes:
+    file: church-admin/.claude/hooks/scripts/validate_finance.py
+    description: 'P1 deterministic validation for finance.yaml. Enforces F1-F5 rules: F1 unique IDs, F2 amount positivity,
+      F3 sum consistency, F4 budget arithmetic, F5 monthly summary accuracy.
+
+      '
+    target: data/finance.yaml
+    rules:
+    - 'F1: All offering/expense IDs unique and match format'
+    - 'F2: All amount fields > 0'
+    - 'F3: offerings[].total == sum(items[].amount) with tolerance < 1'
+    - 'F4: budget.total_budget == sum(budget.categories.values())'
+    - 'F5: monthly_summary totals match non-void records for that month'
+- id: validate-schedule
+  type: validation-script
+  slug: validate-schedule
+  attributes:
+    file: church-admin/.claude/hooks/scripts/validate_schedule.py
+    description: 'P1 deterministic validation for schedule.yaml. Enforces S1-S5 rules: S1 unique IDs, S2 time format, S3 recurrence
+      validity, S4 event status enum, S5 facility booking time range.
+
+      '
+    target: data/schedule.yaml
+    rules:
+    - 'S1: All service/event/booking IDs unique'
+    - 'S2: Time fields match HH:MM 24-hour format'
+    - 'S3: recurrence in {weekly, biweekly, monthly}'
+    - 'S4: event status in {planned, confirmed, completed, cancelled}'
+    - 'S5: facility_bookings time_end > time_start'
+- id: validate-newcomers
+  type: validation-script
+  slug: validate-newcomers
+  attributes:
+    file: church-admin/.claude/hooks/scripts/validate_newcomers.py
+    description: 'P1 deterministic validation for newcomers.yaml. Enforces N1-N5 rules: N1 unique IDs, N2 journey stage validity,
+      N3 milestone ordering, N4 referral integrity, N5 settlement link.
+
+      '
+    target: data/newcomers.yaml
+    rules:
+    - 'N1: All newcomer IDs unique and match N\d{3,} format'
+    - 'N2: journey_stage in {first_visit, attending, small_group, baptism_class, baptized, settled}'
+    - 'N3: Stage milestones completed sequentially (no skipping)'
+    - 'N4: referred_by references valid member ID in members.yaml when set'
+    - 'N5: settled_as_member references valid member ID when status is settled'
+- id: hitl-controller
+  type: system-component
+  slug: hitl-controller
+  attributes:
+    description: 'Three-level human approval architecture based on risk classification. High-risk operations (finance, member
+      deletion, certificate issuance) require double-review. Medium-risk (bulletin publish, newcomer stage transition) require
+      single confirmation. Low-risk (glossary append, schedule query) are auto-approved.
+
+      '
+    risk_levels:
+    - level: high
+      approval: double-review (pastor + admin)
+      examples:
+      - Financial record creation/modification
+      - Member status changes (inactive, transferred, deceased)
+      - Certificate/official document issuance
+      - Tax receipt generation
+    - level: medium
+      approval: single-review (admin)
+      examples:
+      - Bulletin content publishing
+      - Newcomer journey stage transition
+      - Event creation/modification
+      - Template changes
+    - level: low
+      approval: auto-approved
+      examples:
+      - Glossary term addition
+      - Schedule read queries
+      - Computed field regeneration
+      - Report generation (read-only)
+- id: bulletin-workflow
+  type: feature-workflow
+  slug: bulletin-workflow
+  attributes:
+    description: 'Weekly bulletin generation workflow. Triggered every Wednesday/Thursday. Collects sermon info, worship order,
+      announcements, celebrations from data files. Applies bulletin template. Generates draft for pastor review. Final output:
+      formatted bulletin document.
+
+      '
+    trigger: weekly (Wed/Thu)
+    milestone: M1
+    input_sources:
+    - data/schedule.yaml (worship order, preacher)
+    - data/members.yaml (birthdays, anniversaries)
+    - data/bulletin-data.yaml (announcements, prayer requests)
+    output: bulletins/YYYY-MM-DD-bulletin.md
+- id: newcomer-workflow
+  type: feature-workflow
+  slug: newcomer-workflow
+  attributes:
+    description: 'Newcomer management pipeline workflow. Tracks newcomers through 6-stage journey. Sends reminders, generates
+      follow-up reports, manages shepherd assignments. Auto-generates monthly newcomer status report.
+
+      '
+    trigger: event-driven + monthly report
+    milestone: M1
+    journey_stages: 6
+    output: reports/newcomer-status-YYYY-MM.md
+- id: finance-workflow
+  type: feature-workflow
+  slug: finance-workflow
+  attributes:
+    description: 'Monthly financial reporting workflow. Aggregates offerings and expenses, computes budget vs actual comparison,
+      generates tax receipt data. Autopilot permanently disabled — all operations require human approval.
+
+      '
+    trigger: monthly (1st week)
+    milestone: M2
+    autopilot: permanently_disabled
+    output: reports/finance-YYYY-MM.md
+- id: document-workflow
+  type: feature-workflow
+  slug: document-workflow
+  attributes:
+    description: 'On-demand document generation workflow using scan-and-replicate engine. Supports 7 document types. Uses
+      template YAML + data sources to produce formatted output documents. First-time template scan requires mandatory human
+      confirmation.
+
+      '
+    trigger: on-demand
+    milestone: M2
+    document_types: 7
+    output: reports/ and certificates/
+- id: nl-interface
+  type: system-component
+  slug: nl-interface
+  attributes:
+    description: 'Korean natural language command interface for non-technical church staff. Maps Korean conversational commands
+      to system actions. Example: "이번 주 새신자 현황 알려줘" → newcomer status query. Uses church-glossary.yaml for domain-specific
+      term resolution.
+
+      '
+    milestone: M1
+    language: Korean
+    example_commands:
+    - input: 이번 주 새신자 현황 알려줘
+      action: query newcomers.yaml for active newcomers this week
+    - input: 다음 주일 주보 만들어줘
+      action: trigger bulletin-workflow for next Sunday
+    - input: 김철수 집사 연락처 알려줘
+      action: query members.yaml for contact info
+- id: denomination-adapter
+  type: system-component
+  slug: denomination-adapter
+  attributes:
+    description: 'Denomination-specific form and report adapter. Korean churches belong to specific denominations (교단) that
+      require standardized annual reports. Adapter maps church data to denomination-specific formats.
+
+      '
+    supported_denominations:
+    - code: 예장통합
+      name: Presbyterian Church of Korea (PCK/Tonghap)
+      forms:
+      - 교세보고서
+      - 노회보고서
+    - code: 예장합동
+      name: General Assembly of Presbyterian Church in Korea (Hapdong)
+      forms:
+      - 교세보고서
+      - 노회보고서
+    - code: 기감
+      name: Korean Methodist Church (KMC)
+      forms:
+      - 연회보고서
+    milestone: M2
+relations:
+- subject: church-state
+  object: members
+  type: references
+  confidence: high
+  description: church-state.yaml stores the file path to members.yaml via church.data_paths.members
+- subject: church-state
+  object: finance
+  type: references
+  confidence: high
+  description: church-state.yaml stores the file path to finance.yaml via church.data_paths.finance
+- subject: church-state
+  object: schedule
+  type: references
+  confidence: high
+  description: church-state.yaml stores the file path to schedule.yaml via church.data_paths.schedule
+- subject: church-state
+  object: newcomers
+  type: references
+  confidence: high
+  description: church-state.yaml stores the file path to newcomers.yaml via church.data_paths.newcomers
+- subject: newcomers
+  object: members
+  type: refers-to
+  confidence: high
+  description: newcomers[].referred_by references a member ID (M-format) from members.yaml
+- subject: newcomers
+  object: members
+  type: assigns-to
+  confidence: high
+  description: newcomers[].assigned_to references a member ID as the assigned shepherd/pastor
+- subject: newcomers
+  object: members
+  type: settles-into
+  confidence: high
+  description: Upon settlement, newcomers[].settled_as_member links to the new member ID in members.yaml
+- subject: bulletin-data
+  object: members
+  type: references
+  confidence: high
+  description: bulletin.celebrations.birthday[].member_id references members.yaml for birthday data
+- subject: bulletin-data
+  object: schedule
+  type: derives-from
+  confidence: high
+  description: bulletin.worship_order and sermon info are derived from schedule.yaml service definitions
+- subject: finance
+  object: members
+  type: references
+  confidence: medium
+  description: finance.expenses[].approved_by references a member with approval authority (role-based)
+- subject: inbox-pipeline
+  object: members
+  type: populates
+  confidence: high
+  description: Tier A/B/C processing converts raw input files into structured YAML data for members.yaml
+- subject: inbox-pipeline
+  object: finance
+  type: populates
+  confidence: high
+  description: Tier A (Excel/CSV) converts financial spreadsheets into structured finance.yaml offerings/expenses
+- subject: scan-replicate
+  object: bulletin-data
+  type: consumes
+  confidence: high
+  description: Scan-and-replicate engine uses bulletin-data.yaml to fill bulletin template variable slots
+- subject: church-glossary
+  object: nl-interface
+  type: provides-terminology
+  confidence: high
+  description: NL interface uses church-glossary.yaml for Korean term resolution in natural language commands
+- subject: denomination-adapter
+  object: members
+  type: reads
+  confidence: high
+  description: Denomination adapter reads members.yaml to generate denomination-specific member statistics (교세보고서)
+constraints:
+- id: C01
+  description: 'All member IDs must be unique across the entire members.yaml file and match the format M followed by 3 or
+    more digits (e.g., M001, M1234). IDs are immutable once assigned — they must never be reused or changed.
+
+    '
+  enforcement: validate_members.py (M1)
+  severity: critical
+  check: len(set(ids)) == len(ids) and all(re.match(r'^M\d{3,}$', i) for i in ids)
+- id: C02
+  description: 'Financial arithmetic must be exact: offerings[].total must equal the sum of offerings[].items[].amount with
+    tolerance < 1. Budget total must equal the sum of all category budgets. Monthly summaries must accurately reflect non-void
+    records for the corresponding month.
+
+    '
+  enforcement: validate_finance.py (F3, F4, F5)
+  severity: critical
+  check: abs(total - sum(items)) < 1 for each offering; budget_total == sum(categories)
+- id: C03
+  description: 'Newcomer journey stages must progress sequentially without skipping: first_visit → attending → small_group
+    → baptism_class → baptized → settled. Each stage requires all previous milestone.completed = true before the current stage
+    can be set. Stage transitions require human approval.
+
+    '
+  enforcement: validate_newcomers.py (N3) + human-in-the-loop
+  severity: high
+  check: stage_index(current) == stage_index(previous) + 1 for each transition
+- id: C04
+  description: 'All cross-entity references must resolve to existing records. newcomers.referred_by → valid members.id or
+    null. newcomers.assigned_to → valid members.id. newcomers.settled_as_member → valid members.id when set. bulletin.celebrations.birthday.member_id
+    → valid members.id. bulletin.celebrations.wedding_anniversary.family_id → valid members.family.family_id.
+
+    '
+  enforcement: validate_newcomers.py (N4, N5) + validate_members.py (M5)
+  severity: critical
+  check: all(ref_id in members_ids for ref_id in cross_references if ref_id is not None)
+- id: C05
+  description: 'church-state.yaml write access is restricted to the Orchestrator or Team Lead only. All other agents (sub-agents,
+    teammates) must access church-state.yaml as read-only. This is a direct expression of Absolute Principle 2 (Single-File
+    SOT with single-writer pattern).
+
+    '
+  enforcement: guard_data_files.py (PreToolUse hook) + agent definition constraints
+  severity: critical
+  check: writer_agent == 'orchestrator' or writer_agent == 'team-lead' for SOT writes
+- id: C06
+  description: 'Each data file has exactly one designated writer agent. members.yaml is written only by member-manager. finance.yaml
+    only by finance-recorder. newcomers.yaml only by newcomer-tracker. bulletin-data.yaml only by bulletin-generator. No agent
+    may write to another agent''s data file.
+
+    '
+  enforcement: guard_data_files.py (PreToolUse hook)
+  severity: critical
+  check: tool_target_file in agent.allowed_write_files for each write operation
+- id: C07
+  description: 'Members must never be deleted from members.yaml. Inactive members are marked as status: inactive to preserve
+    historical records (교적 보존). This is a church governance requirement — member history is permanent.
+
+    '
+  enforcement: validate_members.py (M4) + block_destructive_commands.py
+  severity: critical
+  check: no DELETE operations on members.yaml; status change to 'inactive' only
+- id: C08
+  description: 'Financial records must never be deleted. Invalid entries are marked as void: true. Voided records are excluded
+    from monthly_summary calculations but remain in the file for audit trail purposes.
+
+    '
+  enforcement: validate_finance.py + human-in-the-loop
+  severity: critical
+  check: 'no DELETE operations on finance.yaml; void: true for invalid records'
+- id: C09
+  description: 'All financial operations (offering recording, expense recording, budget modification) must go through human
+    approval. Autopilot mode is permanently disabled for finance operations. This constraint cannot be overridden by any mode
+    (including ULW).
+
+    '
+  enforcement: finance-recorder agent constraint + Autopilot exclusion
+  severity: critical
+  check: autopilot.enabled == false for all finance workflow steps
+- id: C10
+  description: 'High-risk operations require double-review (pastor + admin): member status changes to inactive/transferred/deceased,
+    certificate issuance, tax receipt generation, and any financial write operation.
+
+    '
+  enforcement: hitl-controller (high risk level)
+  severity: high
+  check: approval_count >= 2 for high-risk operations (pastor + admin)
+- id: C11
+  description: 'All date fields must use YYYY-MM-DD format (ISO 8601). All time fields must use HH:MM 24-hour format. Phone
+    numbers must match Korean mobile format 010-XXXX-XXXX when present. Currency is always KRW with integer amounts (no decimal).
+
+    '
+  enforcement: validate_members.py (M3, M6) + validate_schedule.py (S2) + validate_finance.py (F2)
+  severity: high
+  check: re.match(r'^\d{4}-\d{2}-\d{2}$', date) and re.match(r'^010-\d{4}-\d{4}$', phone)
+- id: C12
+  description: 'Church glossary terms are append-only. No existing term may be modified or deleted from church-glossary.yaml.
+    New terms can only be added. Korean term field must be unique across all entries.
+
+    '
+  enforcement: glossary append-only policy + agent constraints
+  severity: medium
+  check: set(old_terms).issubset(set(new_terms)) — no term removal allowed
+- id: C13
+  description: 'Bulletin issue_number in bulletin-data.yaml must be monotonically increasing. It must match or follow church-state.yaml''s
+    church.current_bulletin_issue. Duplicate issue numbers are forbidden. Gaps in numbering should trigger a warning.
+
+    '
+  enforcement: validate_bulletin.py (B1-B3) + church-state SOT check
+  severity: high
+  check: issue_number > previous_issue_number and no duplicates in history
+- id: C14
+  description: 'Facility bookings must not overlap in time for the same facility on the same date. The system must detect
+    and prevent double-booking. time_end must always be greater than time_start for the same booking.
+
+    '
+  enforcement: validate_schedule.py (S5) + conflict detection logic
+  severity: medium
+  check: no overlap(booking_a, booking_b) for same facility on same date

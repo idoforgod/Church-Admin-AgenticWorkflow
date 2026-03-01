@@ -1,0 +1,108 @@
+# state.yaml — SOT (Single Source of Truth)
+# Church Administration AI Agentic Workflow Automation System
+# Write permission: Orchestrator (main session) or Team Lead only (절대 기준 2).
+# All agents access read-only.
+
+workflow:
+  name: "Church Administration System Build"
+  current_step: 15
+  status: "completed"
+
+  parent_genome:
+    source: "AgenticWorkflow"
+    version: "2026-02-27"
+    inherited_dna:
+      - "absolute-criteria"
+      - "sot-pattern"
+      - "3-phase-structure"
+      - "4-layer-qa"
+      - "safety-hooks"
+      - "adversarial-review"
+      - "decision-log"
+      - "context-preservation"
+      - "cross-step-traceability"
+      - "domain-knowledge-structure"
+
+  outputs:
+    # Research
+    step-1: "research/domain-analysis.md"
+    step-1-ko: "research/domain-analysis.ko.md"
+    step-2: "research/template-analysis.md"
+    step-2-ko: "research/template-analysis.ko.md"
+    # Planning
+    step-4: "planning/data-architecture-spec.md"
+    # step-4-ko: "planning/data-architecture-spec.ko.md"
+    step-5: "planning/system-architecture.md"
+    step-5-ko: "planning/system-architecture.ko.md"
+    # Implementation
+    step-7: "church-admin/"
+    step-8: "church-admin/.claude/hooks/scripts/"
+    step-9: "church-admin/workflows/"
+    step-9-ko: "church-admin/workflows/weekly-bulletin.ko.md, church-admin/workflows/newcomer-pipeline.ko.md"
+    step-11: "church-admin/workflows/"
+    step-11-ko: "church-admin/workflows/monthly-finance-report.ko.md, church-admin/workflows/document-generator.ko.md, church-admin/workflows/schedule-manager.ko.md"
+    step-12: "testing/integration-test-report.md"
+    step-12-ko: "testing/integration-test-report.ko.md"
+    step-13: "church-admin/docs/"
+    step-13-ko: "church-admin/docs/installation-guide.ko.md, church-admin/docs/quick-start.ko.md, church-admin/docs/user-guide.ko.md, church-admin/docs/troubleshooting.ko.md, church-admin/docs/it-admin-guide.ko.md"
+    step-14: "autopilot-logs/step-14-decision.md"
+
+  pending_human_action:
+    step: null
+    options: []
+
+  autopilot:
+    enabled: true
+    decision_log_dir: "autopilot-logs/"
+    auto_approved_steps: [3, 6, 10, 14]
+
+  pacs:
+    current_step_score: 80
+    dimensions:
+      F: 85
+      C: 80
+      L: 88
+    weak_dimension: "C"
+    pre_mortem_flag: "No live E2E deployment test; 39 NL patterns may overlap to ~30-35 unique ops; seed data ≠ production data scale"
+    history:
+      step-1:
+        score: 78
+        weak: "C"
+      step-2:
+        score: 85
+        weak: "F"
+      step-4:
+        score: 85
+        weak: "C"
+      step-5:
+        score: 82
+        weak: "C"
+      step-7:
+        score: 85
+        weak: "C"
+      step-8:
+        score: 88
+        weak: "C"
+      step-9:
+        score: 74
+        weak: "C"
+      step-11:
+        score: 72
+        weak: "C"
+      step-12:
+        score: 74
+        weak: "C"
+      step-13:
+        score: 78
+        weak: "C"
+      step-14:
+        score: 80
+        weak: "C"
+
+  domain_knowledge:
+    file: "planning/domain-knowledge.yaml"
+    entity_count: 20
+    relation_count: 15
+    constraint_count: 14
+    built_at_step: 1
+    last_validated: "2026-02-28"

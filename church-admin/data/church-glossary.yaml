@@ -1,0 +1,321 @@
+# data/church-glossary.yaml
+# Writer: ANY agent (append-only — never delete or modify existing terms)
+# Sensitivity: LOW (reference data)
+# Deletion policy: APPEND-ONLY — never delete terms
+# Seeded with 50+ terms on Day-1
+# Referenced by all agents for consistent Korean church terminology
+
+schema_version: "1.0"
+last_updated: "2026-02-28"
+updated_by: "orchestrator"
+
+terms:
+  # ── Roles (직분) ──
+  - korean: "목사"
+    english: "pastor"
+    context: "교회의 영적 지도자로서 설교, 심방, 성례를 담당하는 성직자"
+    category: "role"
+
+  - korean: "담임목사"
+    english: "senior_pastor"
+    context: "교회의 최고 목회자. 당회장을 겸함. 설교, 성례, 목회 전반 책임"
+    category: "role"
+
+  - korean: "부목사"
+    english: "associate_pastor"
+    context: "담임목사를 보좌하는 목사. 특정 부서(청년, 교육 등) 담당"
+    category: "role"
+
+  - korean: "전도사"
+    english: "evangelist"
+    context: "목사 안수 전 목회자. 특정 부서 담당 또는 전도 사역"
+    category: "role"
+
+  - korean: "장로"
+    english: "elder"
+    context: "장로교 전통에서 목사와 함께 당회를 구성하는 평신도 직분. 장립 후 종신직"
+    category: "role"
+
+  - korean: "집사"
+    english: "deacon"
+    context: "교회 봉사와 행정을 담당하는 평신도 직분"
+    category: "role"
+
+  - korean: "안수집사"
+    english: "ordained_deacon"
+    context: "안수를 받은 집사. 일반 집사보다 높은 직분으로 장로와 유사한 역할 수행"
+    category: "role"
+
+  - korean: "권사"
+    english: "deaconess"
+    context: "여성 직분. 심방과 교인 돌봄 담당. 장로교 전통 특유의 직분"
+    category: "role"
+
+  - korean: "성도"
+    english: "member"
+    context: "직분이 없는 일반 교인. 세례 유무와 관계없이 등록 교인을 지칭"
+    category: "role"
+
+  - korean: "구역장"
+    english: "cell_group_leader"
+    context: "지역별 소그룹(구역)의 리더. 구역 모임 인도 및 구역원 돌봄"
+    category: "role"
+
+  # ── Governance (치리/조직) ──
+  - korean: "당회"
+    english: "session_meeting"
+    context: "담임목사와 장로로 구성된 교회 최고 의결기관. 재정, 인사, 성례 결정"
+    category: "governance"
+
+  - korean: "제직회"
+    english: "deacons_meeting"
+    context: "목사, 장로, 집사, 권사 전체가 모이는 봉사자 회의"
+    category: "governance"
+
+  - korean: "공동의회"
+    english: "congregational_meeting"
+    context: "전체 교인이 참여하는 총회. 연간 예산, 목사 청빙 등 중요 안건 의결"
+    category: "governance"
+
+  - korean: "노회"
+    english: "presbytery"
+    context: "지역 교회들의 연합 기관. 목사 임직, 장로 인준, 교회 분쟁 조정"
+    category: "governance"
+
+  - korean: "총회"
+    english: "general_assembly"
+    context: "교단의 최고 의결 기관. 연 1회 개최"
+    category: "governance"
+
+  - korean: "교단"
+    english: "denomination"
+    context: "같은 교리와 제도를 공유하는 교회들의 연합체 (예: 예장통합, 예장합동, 기감)"
+    category: "governance"
+
+  - korean: "예장통합"
+    english: "PCK"
+    context: "Presbyterian Church of Korea (Tonghap). 한국 최대 장로교단"
+    category: "governance"
+
+  - korean: "예장합동"
+    english: "GAPCK"
+    context: "General Assembly of Presbyterian Church in Korea (Hapdong)"
+    category: "governance"
+
+  - korean: "기감"
+    english: "KMC"
+    context: "Korean Methodist Church. 한국 감리교"
+    category: "governance"
+
+  # ── Sacraments & Ceremonies (성례/의식) ──
+  - korean: "세례"
+    english: "baptism"
+    context: "기독교 입문 성례. 유아세례(infant)와 성인세례(adult)로 구분"
+    category: "ceremony"
+
+  - korean: "유아세례"
+    english: "infant_baptism"
+    context: "부모의 신앙 고백에 기반하여 유아에게 베푸는 세례"
+    category: "ceremony"
+
+  - korean: "입교"
+    english: "confirmation"
+    context: "유아세례 받은 자가 성인이 되어 자신의 신앙을 고백하는 의식"
+    category: "ceremony"
+
+  - korean: "성찬"
+    english: "communion"
+    context: "빵과 포도주(포도즙)로 예수의 죽음을 기념하는 성례"
+    category: "ceremony"
+
+  - korean: "임직"
+    english: "ordination"
+    context: "장로, 집사, 권사 등 직분을 받는 의식. 고시(시험)와 서약 포함"
+    category: "ceremony"
+
+  - korean: "이명"
+    english: "transfer"
+    context: "교인이 다른 교회로 교적을 옮기는 것. 이명증서 발급 필요"
+    category: "membership"
+
+  # ── Worship (예배) ──
+  - korean: "축도"
+    english: "benediction"
+    context: "예배 마지막에 목사가 성도에게 축복을 선포하는 의식"
+    category: "worship"
+
+  - korean: "봉헌"
+    english: "offertory"
+    context: "예배 중 헌금을 드리는 순서"
+    category: "worship"
+
+  - korean: "대표기도"
+    english: "representative_prayer"
+    context: "예배 중 회중을 대표하여 드리는 기도. 지명된 교인이 수행"
+    category: "worship"
+
+  - korean: "교독문"
+    english: "responsive_reading"
+    context: "인도자와 회중이 교대로 성경 구절을 낭독하는 순서"
+    category: "worship"
+
+  - korean: "찬양"
+    english: "praise_worship"
+    context: "예배 중 찬양팀이 인도하는 현대식 찬양 시간"
+    category: "worship"
+
+  - korean: "새벽기도회"
+    english: "early_morning_prayer"
+    context: "매일 새벽(보통 5-6시)에 드리는 기도회. 한국 교회 특유의 문화"
+    category: "worship"
+
+  # ── Finance (재정) ──
+  - korean: "십일조"
+    english: "tithe"
+    context: "월 수입의 10분의 1을 하나님께 드리는 헌금. 가장 보편적 정기 헌금"
+    category: "finance"
+
+  - korean: "감사헌금"
+    english: "thanksgiving_offering"
+    context: "특별한 감사의 계기(생일, 회복, 합격 등)가 있을 때 드리는 헌금"
+    category: "finance"
+
+  - korean: "주일헌금"
+    english: "sunday_offering"
+    context: "매주 주일예배 시 드리는 일반 헌금"
+    category: "finance"
+
+  - korean: "건축헌금"
+    english: "building_fund"
+    context: "교회 건축/증축을 위한 특별 헌금"
+    category: "finance"
+
+  - korean: "선교헌금"
+    english: "mission_offering"
+    context: "국내외 선교 사업을 위해 지정하여 드리는 헌금"
+    category: "finance"
+
+  - korean: "기부금영수증"
+    english: "tax_donation_receipt"
+    context: "소득세법에 따른 기부금 영수증. 연말정산 시 세액공제 대상"
+    category: "finance"
+
+  - korean: "사례비"
+    english: "pastoral_salary"
+    context: "목회자에게 지급하는 급여. 당회/장로회 승인 필요"
+    category: "finance"
+
+  # ── Documents (문서) ──
+  - korean: "주보"
+    english: "church_bulletin"
+    context: "매주 주일예배에 배포하는 주간 안내지. 설교 정보, 공지, 기도 제목 포함"
+    category: "document"
+
+  - korean: "순서지"
+    english: "worship_order_sheet"
+    context: "예배 순서가 인쇄된 문서. 주보와 별도로 배포하는 경우도 있음"
+    category: "document"
+
+  - korean: "공문"
+    english: "official_letter"
+    context: "교회 명의로 발송하는 공식 서한. 직인(교회 도장) 필요"
+    category: "document"
+
+  - korean: "회의록"
+    english: "meeting_minutes"
+    context: "당회록, 제직회의록 등 교회 공식 회의의 기록 문서"
+    category: "document"
+
+  - korean: "증서"
+    english: "certificate"
+    context: "세례증서, 이명증서, 임직증서 등 교회가 발행하는 공식 증명 문서"
+    category: "document"
+
+  - korean: "초청장"
+    english: "invitation"
+    context: "특별 행사(부흥회, 음악회, 헌당식 등)를 위해 발송하는 초청 문서"
+    category: "document"
+
+  - korean: "교적"
+    english: "church_register"
+    context: "교인 명부. 세례, 입교, 이명 등 교인의 공식 기록"
+    category: "document"
+
+  # ── Administrative Terms (행정 용어) ──
+  - korean: "직인"
+    english: "official_seal"
+    context: "교회의 공식 도장. 공문서 발행 시 날인 필수"
+    category: "document"
+
+  - korean: "인감"
+    english: "registered_seal"
+    context: "법적 등록된 교회 인감도장. 계약서, 법적 문서에 사용"
+    category: "document"
+
+  - korean: "주민등록번호"
+    english: "resident_registration_number"
+    context: "13자리 개인 식별 번호. 기부금영수증 발행에 필요. 부분 마스킹 필수"
+    category: "membership"
+
+  - korean: "세로쓰기"
+    english: "vertical_text"
+    context: "전통 문서에서 세로로 글을 쓰는 형식. 현수막, 구호, 찬송가판 등에 사용"
+    category: "document"
+
+  # ── Events (행사/절기) ──
+  - korean: "부활절"
+    english: "easter"
+    context: "예수 부활을 기념하는 절기. 춘분 후 첫 보름달 다음 일요일"
+    category: "ceremony"
+
+  - korean: "성탄절"
+    english: "christmas"
+    context: "예수 탄생을 기념하는 절기. 12월 25일"
+    category: "ceremony"
+
+  - korean: "추수감사절"
+    english: "thanksgiving"
+    context: "한국 교회의 추수감사절. 11월 셋째 주일 (미국과 날짜 다름)"
+    category: "ceremony"
+
+  - korean: "부흥회"
+    english: "revival_meeting"
+    context: "외부 강사를 초청하여 연속으로 진행하는 특별 집회"
+    category: "worship"
+
+  - korean: "수련회"
+    english: "retreat"
+    context: "교인들이 교회 밖에서 합숙하며 진행하는 영적 훈련 프로그램"
+    category: "worship"
+
+  # ── Ministry (사역) ──
+  - korean: "심방"
+    english: "pastoral_visitation"
+    context: "목사나 권사가 교인의 가정을 방문하는 목회 활동"
+    category: "membership"
+
+  - korean: "전도"
+    english: "evangelism"
+    context: "비신자에게 복음을 전하는 활동"
+    category: "membership"
+
+  - korean: "구역"
+    english: "cell_group"
+    context: "교인을 지역별로 나눈 소그룹 단위. 구역장이 주관"
+    category: "membership"
+
+  - korean: "소천"
+    english: "passing_away"
+    context: "교인 사망의 교회 내 완곡 표현. 하나님 곁으로 돌아감"
+    category: "membership"
+
+  # ── Facility (시설) ──
+  - korean: "본당"
+    english: "main_sanctuary"
+    context: "주일예배가 진행되는 주 예배실"
+    category: "worship"
+
+  - korean: "교육관"
+    english: "education_building"
+    context: "주일학교, 교육 프로그램이 진행되는 별도 건물 또는 층"
+    category: "worship"

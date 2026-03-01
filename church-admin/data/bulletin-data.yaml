@@ -1,0 +1,126 @@
+# data/bulletin-data.yaml
+# Writer: bulletin-generator agent (sole writer — Layer 1 enforced)
+# Validator: validate_bulletin.py (B1-B3)
+# Sensitivity: LOW (public bulletin content)
+# Updated: weekly (every Wednesday/Thursday for upcoming Sunday)
+
+schema_version: "1.0"
+last_updated: "2026-02-28"
+updated_by: "bulletin-generator"
+
+bulletin:
+  issue_number: 1247
+  date: "2026-03-01"
+  church_name: "새벽이슬교회 (Morning Dew Church)"
+
+  sermon:
+    title: "두려움을 넘어선 믿음 (Faith Beyond Fear)"
+    scripture: "요한복음 6:16-21 (John 6:16-21)"
+    preacher: "담임목사 (Senior Pastor)"
+    series: "요한복음 강해 시리즈 (Gospel of John Exposition Series)"
+    series_episode: 18
+
+  worship_order:
+    - order: 1
+      item: "예배의 부름 (Call to Worship)"
+      detail: "시편 95:1-7"
+      performer: "인도자 (Worship Leader)"
+    - order: 2
+      item: "찬양 (Praise & Worship)"
+      detail: "주님 찬양해, 나 같은 죄인 살리신"
+      performer: "찬양팀B (Worship Team B)"
+    - order: 3
+      item: "교독문 (Responsive Reading)"
+      detail: "교독문 45번"
+      performer: "인도자 (Worship Leader)"
+    - order: 4
+      item: "대표기도 (Representative Prayer)"
+      detail: null
+      performer: "김철수 집사 (Deacon Kim Chulsoo)"
+    - order: 5
+      item: "성경봉독 (Scripture Reading)"
+      detail: "요한복음 6:16-21"
+      performer: "이영희 권사 (Deaconess Lee Younghee)"
+    - order: 6
+      item: "봉헌 (Offering)"
+      detail: "봉헌찬양: 주 하나님 지으신 모든 세계"
+      performer: null
+    - order: 7
+      item: "말씀 (Sermon)"
+      detail: "두려움을 넘어선 믿음 (Faith Beyond Fear)"
+      performer: "담임목사 (Senior Pastor)"
+    - order: 8
+      item: "찬양 (Hymn)"
+      detail: "찬송가 370장 — 예수 사랑하심은"
+      performer: "회중 (Congregation)"
+    - order: 9
+      item: "축도 (Benediction)"
+      detail: null
+      performer: "담임목사 (Senior Pastor)"
+
+  announcements:
+    - id: "ANN-001"
+      category: "행사 (Event)"
+      title: "3월 구역모임 일정 (March Cell Group Schedule)"
+      content: "이번 주 수요일 오후 7시, 각 구역별 모임이 있습니다. 구역장님께 확인 바랍니다."
+      priority: "high"
+      expires: "2026-03-04"
+    - id: "ANN-002"
+      category: "새신자 (Newcomer)"
+      title: "새신자 환영회 (Newcomer Welcome Reception)"
+      content: "예배 후 본당 로비에서 새신자 환영 다과 시간이 있습니다. 많은 참여 바랍니다."
+      priority: "normal"
+      expires: "2026-03-01"
+    - id: "ANN-003"
+      category: "선교 (Mission)"
+      title: "3월 선교헌금 특별주간 (March Mission Offering Special Week)"
+      content: "3월 8일-15일 동남아 선교사 파송을 위한 특별 선교헌금 주간입니다."
+      priority: "normal"
+      expires: "2026-03-15"
+
+  prayer_requests:
+    - category: "교회 (Church)"
+      content: "3월 부흥회를 위한 성령의 역사를 간구합니다. (Pray for the March revival meeting)"
+    - category: "국가 (Nation)"
+      content: "나라와 민족의 평화와 화합을 위해 기도합니다. (Intercessory prayer for national peace)"
+    - category: "교인 (Members)"
+      content: "투병 중인 교우들의 빠른 회복을 위해 기도합니다. (Pray for recovering members)"
+    - category: "선교 (Mission)"
+      content: "해외 선교사들의 사역과 건강을 위해 기도합니다. (Pray for overseas missionaries)"
+
+  offering_team:
+    - "박○○ 권사 (Deaconess Park)"
+    - "최○○ 집사 (Deacon Choi)"
+    - "한소영 집사 (Deacon Han Soyoung)"
+
+  celebrations:
+    birthday:
+      - member_id: "M045"
+        name: "홍○○"
+        date: "03-03"
+      - member_id: "M001"
+        name: "김○○"
+        date: "03-15"
+    wedding_anniversary:
+      - family_id: "F025"
+        date: "03-10"
+
+  next_week:
+    sermon_title: "평화의 왕 (Prince of Peace)"
+    scripture: "요한복음 6:22-40 (John 6:22-40)"
+    special_events:
+      - "3월 선교헌금 특별주간 시작 (March Mission Offering begins)"
+
+generation_history:
+  - issue: 1245
+    generated_at: "2026-02-15T14:00:00"
+    generated_by: "bulletin-generator"
+    output_path: "bulletins/2026-02-15-bulletin.md"
+  - issue: 1246
+    generated_at: "2026-02-22T14:30:00"
+    generated_by: "bulletin-generator"
+    output_path: "bulletins/2026-02-22-bulletin.md"
+  - issue: 1247
+    generated_at: null
+    generated_by: null
+    output_path: null

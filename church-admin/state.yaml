@@ -1,0 +1,110 @@
+# state.yaml — Church Administration System SOT
+# Central Single Source of Truth — Orchestrator/Team Lead ONLY writer
+# All other agents: READ-ONLY access
+# This is the CHURCH ADMIN system SOT (separate from the build workflow SOT at project root)
+
+church:
+  name: "새벽이슬교회 (Morning Dew Church)"
+  denomination: "PCK"
+  current_bulletin_issue: 1247
+  status: "active"
+
+  # Data file paths — central registry
+  data_paths:
+    members: "data/members.yaml"
+    finance: "data/finance.yaml"
+    schedule: "data/schedule.yaml"
+    newcomers: "data/newcomers.yaml"
+    bulletin: "data/bulletin-data.yaml"
+    glossary: "data/church-glossary.yaml"
+
+  # Active features (which workflows are enabled)
+  features:
+    bulletin_generation: true
+    newcomer_pipeline: true
+    finance_reporting: false
+    document_generation: false
+    denomination_reports: false
+
+  # Workflow states (per-feature state tracking)
+  workflow_states:
+    bulletin:
+      last_generated_issue: 1246
+      last_generated_date: "2026-02-22"
+      next_due_date: "2026-03-01"
+      status: "pending"
+    newcomer:
+      total_active: 2
+      last_check_date: "2026-02-28"
+      status: "idle"
+    finance:
+      current_month: "2026-03"
+      last_report_date: "2026-02-01"
+      status: "disabled"
+
+  # System configuration
+  config:
+    autopilot:
+      enabled: false
+      finance_override: false
+    backup:
+      enabled: true
+      last_backup: "2026-02-28"
+      backup_dir: "backups/"
+    scale:
+      max_members: 500
+      file_split_threshold: 1000
+
+  # Validation tracking — last successful validation run per data file
+  verification_gates:
+    members:
+      last_run: "2026-02-28"
+      result: "7/7 passed"
+      rules: "M1-M7"
+    finance:
+      last_run: "2026-02-28"
+      result: "7/7 passed"
+      rules: "F1-F7"
+    schedule:
+      last_run: "2026-02-28"
+      result: "6/6 passed"
+      rules: "S1-S6"
+    newcomers:
+      last_run: "2026-02-28"
+      result: "6/6 passed"
+      rules: "N1-N6"
+    bulletin:
+      last_run: "2026-02-28"
+      result: "3/3 passed"
+      rules: "B1-B3"
+    aggregate:
+      last_run: "2026-02-28"
+      total_passed: 29
+      total_checks: 29
+
+  # Agent session tracking — most recent activity per agent
+  agent_sessions:
+    bulletin-generator:
+      last_active: null
+      last_action: null
+    newcomer-tracker:
+      last_active: null
+      last_action: null
+    member-manager:
+      last_active: null
+      last_action: null
+    finance-recorder:
+      last_active: null
+      last_action: null
+    schedule-manager:
+      last_active: null
+      last_action: null
+    document-generator:
+      last_active: null
+      last_action: null
+    data-ingestor:
+      last_active: null
+      last_action: null
+    template-scanner:
+      last_active: null
+      last_action: null
