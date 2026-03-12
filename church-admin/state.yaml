@@ -22,25 +22,44 @@ church:
   features:
     bulletin_generation: true
     newcomer_pipeline: true
-    finance_reporting: false
-    document_generation: false
-    denomination_reports: false
+    finance_reporting: true
+    document_generation: true
+    denomination_reports: false   # No workflow exists yet — only template available
 
   # Workflow states (per-feature state tracking)
+  # Field names MUST match workflow.md references exactly
   workflow_states:
     bulletin:
-      last_generated_issue: 1246
-      last_generated_date: "2026-02-22"
-      next_due_date: "2026-03-01"
-      status: "pending"
+      # Referenced by: weekly-bulletin.md (lines 69, 216, 417-449)
+      # Referenced by: generate-bulletin.md (line 9)
+      last_generated_issue: 1247
+      last_generated_date: "2026-03-01"
+      next_due_date: "2026-03-08"
+      status: "completed"
     newcomer:
-      total_active: 2
+      # Referenced by: newcomer-pipeline.md (lines 262, 583)
+      total_active: 5
       last_check_date: "2026-02-28"
       status: "idle"
     finance:
+      # Referenced by: monthly-finance-report.md (lines 329, 537-538)
+      # Referenced by: generate-finance-report.md (line 15)
       current_month: "2026-03"
-      last_report_date: "2026-02-01"
-      status: "disabled"
+      next_due_month: "2026-03"           # workflow reads this field (line 538)
+      last_report_date: "2026-02-28"
+      outputs:                             # workflow writes here (line 329)
+        "2026-02": "docs/generated/2026-02-finance-report.md"
+      status: "idle"
+    schedule:
+      # Referenced by: schedule-manager.md workflow
+      last_updated: "2026-02-28"
+      status: "idle"
+    document:
+      # Referenced by: document-generator.md workflow
+      last_generated: "2026-02-28"
+      last_document_type: "baptism_certificate"
+      last_output_path: "docs/generated/sample-baptism-certificate.md"
+      status: "idle"
 
   # System configuration
   config:
@@ -83,25 +102,28 @@ church:
       total_checks: 29
 
   # Agent session tracking — most recent activity per agent
+  # NOTE: "seed_setup" indicates initial data seeding, NOT actual agent execution.
+  # Agents have not yet been invoked in production. First real execution will
+  # overwrite these entries with actual timestamps and action descriptions.
   agent_sessions:
     bulletin-generator:
       last_active: null
-      last_action: null
+      last_action: "seed_setup: bulletin #1247 data populated by generate_seed_data.py"
     newcomer-tracker:
       last_active: null
-      last_action: null
+      last_action: "seed_setup: 7 newcomer records created by generate_seed_data.py"
     member-manager:
       last_active: null
-      last_action: null
+      last_action: "seed_setup: 42 member records created by generate_seed_data.py"
     finance-recorder:
       last_active: null
-      last_action: null
+      last_action: "seed_setup: 12-month finance data created by generate_seed_data.py"
     schedule-manager:
       last_active: null
-      last_action: null
+      last_action: "seed_setup: schedule expanded by generate_seed_data.py"
     document-generator:
       last_active: null
-      last_action: null
+      last_action: "seed_setup: sample baptism certificate created manually"
     data-ingestor:
       last_active: null
       last_action: null

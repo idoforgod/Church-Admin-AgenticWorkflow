@@ -1,0 +1,40 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if test -f \"$CLAUDE_PROJECT_DIR/.claude/hooks/scripts/guard_data_files.py\"; then python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/scripts/guard_data_files.py\"; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if test -f \"$CLAUDE_PROJECT_DIR/.claude/hooks/scripts/validate_yaml_syntax.py\"; then python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/scripts/validate_yaml_syntax.py\"; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Setup": [
+      {
+        "matcher": "init",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if test -f \"$CLAUDE_PROJECT_DIR/.claude/hooks/scripts/setup_church_admin.py\"; then python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/scripts/setup_church_admin.py\"; fi",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

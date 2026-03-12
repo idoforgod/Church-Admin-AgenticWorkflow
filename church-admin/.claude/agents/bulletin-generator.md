@@ -132,6 +132,7 @@ Before generating output, verify data completeness:
 3. **Cross-Reference Check** — For each anniversary entry:
    - `family_id` matches pattern `F\d+`
    - `family_id` exists in at least one member's `family.family_id` in `members.yaml`
+   - If `names` field is missing, resolve family member names from `members.yaml` (household_head + spouse with same family_id) and populate the display name as `"{head} · {spouse}"`
 
 4. **Issue Sequence Check** — Verify `bulletin.issue_number` is greater than the last entry in `generation_history`
 
@@ -190,7 +191,9 @@ Populate all 16 variable regions following the template schema:
 **VR-BUL-11: Anniversary Members**
 - Format: Bulleted list under "결혼기념일 축하" subheading
 - Source: `bulletin.celebrations.wedding_anniversary[]`
-- Item format: `- 가정 {family_id} ({date})`
+- Item format: `- {names} 가정 ({date})`
+- Name resolution: If `names` field is present in the data entry, use it directly. If `names` is missing, resolve `family_id` by looking up `members.yaml` — find members with matching `family.family_id`, get household_head name and spouse name, construct `"{head} · {spouse}"` as display names.
+- Fallback: If family_id lookup also fails, use `- 가정 {family_id} ({date})`
 - Nullable: Yes — omit section if empty
 
 **VR-BUL-12: Weekly Schedule**

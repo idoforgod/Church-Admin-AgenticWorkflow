@@ -191,11 +191,13 @@ sections:
         source_file: "bulletin-data.yaml"
         required: false
         nullable: true
-        item_format: "가정 ({date})"
+        item_format: "{names} 가정 ({date})"
+        item_format_fallback: "가정 {family_id} ({date})"
         list_style: "bullet"
-        description: "Couples with wedding anniversaries this week"
+        description: "Couples with wedding anniversaries this week. If 'names' field is present, display couple names. Otherwise, resolve family_id from members.yaml to get household_head + spouse names."
         reference_type: "family_id"
         reference_file: "members.yaml"
+        name_resolution: "If 'names' field is missing in the data entry, look up all members with matching family_id in members.yaml, find household_head and spouse, and construct '{head_name} · {spouse_name}' as the display name."
 
   # ── Offering Team ───────────────────────────────────────────
   - name: "offering_team"

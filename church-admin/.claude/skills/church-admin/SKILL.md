@@ -9,12 +9,35 @@ This skill enables non-technical users (행정 간사 who has no CLI experience,
 ## When to Use
 
 This skill activates when the user issues church administration commands in Korean, such as:
+- "시작하자", "시작", "시작해줘" → **MUST show interactive main menu** (`/start`)
 - "이번 주 주보 만들어줘" → Generate weekly bulletin
 - "새신자 현황 보여줘" → Show newcomer status
 - "교인 검색 김철수" → Search member by name
 - "이번 달 재정 보고서 만들어줘" → Generate monthly finance report
 
+## CRITICAL — Start Menu Rule
+
+**When the user types a startup pattern (시작, 시작하자, 메뉴, etc.), you MUST:**
+1. Run `python3 scripts/show_menu.py --state state.yaml --data-dir data/` FIRST
+2. Display the welcome screen with status from the script output
+3. Show `AskUserQuestion` with the top 4 menu items from the script output
+
+**This is NOT optional.** Users who type "시작하자" do not know what the system can do. The menu is their only guide. Never skip the menu, never just describe capabilities — always show the interactive AskUserQuestion menu.
+
 ## Intent Mapping
+
+### Startup / Menu Commands (시작)
+
+| Korean Command Pattern | System Action | Route |
+|----------------------|---------------|-------|
+| "시작", "시작하자", "시작해줘", "시작합니다" | Show interactive main menu | `/start` command |
+| "워크플로우 시작", "워크플로우를 시작하자" | Show interactive main menu | `/start` command |
+| "메뉴", "메뉴 보여줘", "메뉴판" | Show interactive main menu | `/start` command |
+| "뭐 할 수 있어?", "뭘 할 수 있어?", "가능한 기능" | Show interactive main menu | `/start` command |
+| "도움말", "사용법", "어떻게 해?", "어떻게 사용해?" | Show interactive main menu | `/start` command |
+| "처음", "처음부터", "다시 시작" | Show interactive main menu | `/start` command |
+
+> **Priority**: Startup patterns are checked FIRST, before any category-specific routing. Any ambiguous or generic input that doesn't match a specific category should also route to the start menu.
 
 ### Bulletin Commands (주보)
 
@@ -122,23 +145,36 @@ The glossary covers 50+ terms across categories:
 
 ## Error Handling
 
-When a command is not recognized:
+When a command is not recognized, do NOT just print a list — instead, **route to the `/start` interactive menu** so the user can choose from options:
+
+1. Briefly acknowledge: "말씀하신 내용을 더 잘 도와드리기 위해 메뉴를 보여드리겠습니다."
+2. Execute the `/start` command flow (read state.yaml → show status → AskUserQuestion menu)
+3. This ensures beginners always land in a guided experience, never a dead end.
+
+If the `/start` command is not available for any reason, fall back to this static help:
 
 ```
-죄송합니다. 말씀하신 명령을 이해하지 못했습니다.
+"시작"이라고 입력하시면 대화형 메뉴를 보여드립니다.
 
-사용 가능한 명령 예시:
-  📋 주보: "이번 주 주보 만들어줘", "주보 미리보기"
-  👤 새신자: "새신자 현황", "새신자 등록"
-  👥 교인: "교인 검색 [이름]", "교인 통계"
-  💰 재정: "재정 보고서", "헌금 내역"
-  📅 일정: "이번 주 일정", "예배 시간"
-  📁 문서: "증명서 발급", "공문 작성"
-  📥 데이터: "파일 가져오기", "확인 대기"
-  🔧 시스템: "데이터 검증", "도움말"
-
-더 자세한 도움이 필요하시면 "도움말"을 입력하세요.
+또는 아래 명령어를 직접 입력하실 수 있습니다:
+  주보: "이번 주 주보 만들어줘"
+  새신자: "새신자 현황 보여줘"
+  교인: "교인 검색 [이름]"
+  재정: "재정 보고서 만들어줘"
+  일정: "이번 주 일정 보여줘"
+  문서: "증명서 발급해줘"
+  시스템: "데이터 검증해줘"
 ```
+
+## Routing Priority
+
+The intent matching follows this priority order:
+
+1. **Startup/Menu patterns** → `/start` interactive menu (highest priority)
+2. **Specific category commands** → Direct workflow routing (e.g., "주보 만들어줘" → `/generate-bulletin`)
+3. **Ambiguous or greeting-like input** → `/start` interactive menu (catch-all)
+
+This ensures beginner users who type vague requests like "뭐 하면 되지?" or just "안녕" are guided to the interactive menu rather than receiving an error.
 
 ## Context-Aware Routing
 

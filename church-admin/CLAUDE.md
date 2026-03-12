@@ -8,6 +8,38 @@ AI-powered church administration automation for Korean Presbyterian churches. Th
 2. **Single-File SOT** — `state.yaml` is the sole source of truth. All agents read it; only the Orchestrator writes it.
 3. **Code Change Protocol** — Read before modify. Analyze impact. Plan changes. No blind edits.
 
+## Mandatory Start Menu (시작 메뉴 필수 표시 규칙)
+
+**사용자가 아래 패턴 중 하나를 입력하면, 다른 어떤 행동보다 먼저 아래 3단계를 반드시 실행한다.**
+
+> 이 규칙은 절대 기준과 동등한 우선순위를 가진다. 생략, 축약, 대체 불가.
+
+### 트리거 패턴
+
+"시작", "시작하자", "시작해줘", "시작합니다", "워크플로우 시작", "메뉴", "메뉴 보여줘", "메뉴판", "뭐 할 수 있어?", "뭘 할 수 있어?", "가능한 기능", "도움말", "사용법", "어떻게 해?", "처음", "처음부터", "다시 시작", 또는 구체적 작업 지시 없는 인사말
+
+### 필수 실행 순서
+
+**Step 1** — 상태 수집 스크립트 실행 (Bash tool):
+```bash
+python3 scripts/show_menu.py --state state.yaml --data-dir data/
+```
+
+**Step 2** — JSON 출력을 바탕으로 환영 배너 + 현재 상태 + 주의사항(alerts) 표시
+
+**Step 3** — `AskUserQuestion` 도구로 대화형 메뉴 표시:
+- JSON `menu_page1` 배열의 3개 항목 + "더보기..." 옵션 (총 4개)
+- `alert` 필드가 있는 항목은 설명 앞에 "!!" 표시
+- 질문: "어떤 작업을 도와드릴까요?"
+- "더보기" 선택 시 → `menu_page2`의 나머지 항목으로 두 번째 `AskUserQuestion` 표시
+
+### 절대 금지
+
+- 메뉴 없이 "무엇을 도와드릴까요?"라고만 묻는 행위
+- `AskUserQuestion` 대신 텍스트로 메뉴 목록만 출력하는 행위
+- show_menu.py 실행을 건너뛰고 직접 데이터 파일을 읽는 행위
+- "시작하자" 입력에 대해 시스템 설명이나 분석으로 응답하는 행위
+
 ## SOT Discipline
 
 **`state.yaml`** (this directory root) is the central state file.

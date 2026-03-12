@@ -103,6 +103,7 @@ bulletin:
         date: "03-15"
     wedding_anniversary:
       - family_id: "F025"
+        names: "홍길동 · 홍미나"
         date: "03-10"
 
   next_week:
@@ -121,6 +122,6 @@ generation_history:
     generated_by: "bulletin-generator"
     output_path: "bulletins/2026-02-22-bulletin.md"
   - issue: 1247
-    generated_at: null
-    generated_by: null
-    output_path: null
+    generated_at: "2026-02-28T19:00:00"
+    generated_by: "bulletin-generator"
+    output_path: "bulletins/2026-03-01-bulletin.md"

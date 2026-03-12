@@ -14,3 +14,9 @@ inbox/errors/
 
 # Backup files
 backups/
+
+# Dashboard runtime artifacts
+dashboard-logs/
+
+# Python bytecode
+__pycache__/
